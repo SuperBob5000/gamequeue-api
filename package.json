@@ -1,0 +1,26 @@
+{
+  "name": "gamequeue-api",
+  "version": "0.1.0",
+  "description": "An API to save information of the games you would like to play and order them as such.",
+  "main": "index.js",
+  "repository": "git@github.com:SuperBob5000/gamequeue-api.git",
+  "author": "Hywel Taylor",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "apollo-server-express": "^1.3.2",
+    "body-parser": "^1.18.2",
+    "chai": "^4.1.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "graphql": "^0.13.2",
+    "graphql-tools": "^2.23.1",
+    "igdb-api-node": "^3.1.3",
+    "knex": "^0.14.4",
+    "mocha": "^5.0.4",
+    "pg": "^7.4.1"
+  }
+}
