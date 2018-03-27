@@ -10,7 +10,6 @@ const userSchema = async () => {
       t.string('lastname', 100).notNullable();
       t.string('email').notNullable().unique();
       t.string('password').notNullable();
-      t.string('role').notNullable();
     });
   }
 }

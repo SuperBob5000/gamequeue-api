@@ -1,14 +1,39 @@
-const http = require('http');
+const express = require('express');
+const expressGraphql = require('express-graphql');
+const {buildSchema} = require('graphql');
+const typeDefs = require('./src/graphql/typedefs');
+const {addUser, findUserByEmail} = require('./src/queries/user');
+const {getUserByEmail, createUser, authenticate} = require('./src/graphql/resolvers/users');
+const userSchema = require('./src/tables/userSchema.js');
+require('dotenv').config;
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const initialiseData = async () => {
+  await userSchema();
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
-});
+  const admin = await findUserByEmail('admin@admin.com');
+  if(!admin) {
+    const args = {
+      firstname: 'admin',
+      lastname: 'adminson',
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PW
+    }
+    await addUser(args);
+  }
+}
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+initialiseData();
+
+const schema = buildSchema(typeDefs);
+const root = {
+  getUserByEmail : getUserByEmail,
+  authenticate : authenticate
+}
+
+const app = express();
+app.use('/graphql', expressGraphql({
+  schema: schema,
+  rootValue: root,
+  graphiql: true
+}));
+app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
