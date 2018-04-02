@@ -52,10 +52,12 @@ describe('User', function() {
 
     it('Create user and hash password via resolver', async function() {
       const args = {
-        firstname: 'Pendleton',
-        lastname: 'Pimp',
-        email: 'pendleton@pimp.com',
-        password: 'WhereTheCheeseAt',
+        userInput: {
+          firstname: 'Pendleton',
+          lastname: 'Pimp',
+          email: 'pendleton@pimp.com',
+          password: 'WhereTheCheeseAt',
+        }
       };
 
       const id = await createUser(args);

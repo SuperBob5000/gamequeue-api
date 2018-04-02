@@ -5,10 +5,19 @@ const typeDefs = `
     lastname: String
     email: String
   },
+  input UserInput {
+    firstname: String!
+    lastname: String!
+    password: String!
+    email: String!
+  },
   type Query {
     getUserByEmail(email: String, token: String) : User
     authenticate(email: String, password: String) : String
   },
+  type Mutation {
+    createUser(userInput: UserInput) : Int
+  }
 `;
 
 module.exports = typeDefs;

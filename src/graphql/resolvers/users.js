@@ -1,9 +1,6 @@
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-const {
-  findUserByEmail,
-  addUser
-} = require('../../queries/user');
+const { findUserByEmail, addUser } = require('../../queries/user');
 const verify = require('../../verifyjwt');
 require('dotenv').config;
 
@@ -30,7 +27,7 @@ const getUserByEmail = async (args) => {
 }
 
 const createUser = async (args) => {
-  const { email, password } = args;
+  const { email, password } = args.userInput;
 
   if (email) {
     try {
@@ -43,7 +40,7 @@ const createUser = async (args) => {
     }
 
     try {
-        return await addUser(args);
+        return await addUser(args.userInput);
     } catch (err) {
       return err;
     }

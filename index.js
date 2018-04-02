@@ -27,7 +27,8 @@ initialiseData();
 const schema = buildSchema(typeDefs);
 const root = {
   getUserByEmail : getUserByEmail,
-  authenticate : authenticate
+  authenticate : authenticate,
+  createUser: createUser
 }
 
 const app = express();
