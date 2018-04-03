@@ -23,4 +23,12 @@ const addGame = async (args) => {
   }
 }
 
-module.exports = { getIgdbGame, addGame };
+const getGameById = async (id) => {
+  try{
+    return await knex('game').where('id', id);
+  } catch (err) {
+    return err;
+  }
+}
+
+module.exports = { getIgdbGame, addGame, getGameById };
