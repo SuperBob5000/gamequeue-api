@@ -4,7 +4,7 @@ const assert = require('chai').assert;
 const knex = require('../src/dbconnection');
 const gameSchema = require('../src/tables/gameSchema.js');
 const dropGameSchema = require('../src/tables/dropGameSchema.js');
-const {getIgdbGame, addGame, getGameById} = require('../src/queries/game.js');
+const {getIgdbGame, addGame, getGameById, searchGames} = require('../src/queries/game.js');
 
 describe('Game', function() {
   before(async function() {
@@ -62,5 +62,11 @@ describe('Game', function() {
     assert.isString(game[0].summary);
     assert.equal(game[0].name, 'TimeSplitters: Future Perfect');
 
+  });
+
+  it('Should return game with loose search.', async function() {
+    const response = await searchGames('Time');
+    assert.exists(response[0]);
+    assert.equal(response[0].name, 'TimeSplitters: Future Perfect');
   });
 });

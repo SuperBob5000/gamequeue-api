@@ -10,7 +10,7 @@ require('dotenv').config;
 const initialiseData = async () => {
   await userSchema();
 
-  const admin = await findUserByEmail('admin@admin.com');
+  const admin = await findUserByEmail(process.env.ADMIN_EMAIL);
   if(!admin) {
     const args = {
       firstname: 'admin',
