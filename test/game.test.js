@@ -1,14 +1,34 @@
+debugger;
 require('dotenv').config;
 process.env.DB_NAME = 'gamequeue_TEST';
 const assert = require('chai').assert;
 const knex = require('../src/dbconnection');
-const gameSchema = require('../src/tables/gameSchema.js');
-const dropGameSchema = require('../src/tables/dropGameSchema.js');
-const {getIgdbGame, addGame, getGameById, searchGames} = require('../src/queries/game.js');
+const gameSchema = require('../src/tables/gameSchema');
+const dropGameSchema = require('../src/tables/dropGameSchema');
+const userSchema = require('../src/tables/userSchema.js');
+const dropUserSchema = require('../src/tables/dropUserSchema.js');
+const {authenticate, createUser} = require('../src/graphql/resolvers/users');
+const {getIgdbGame, addGame, getGameById, searchGames} = require('../src/queries/game');
+const findGames = require('../src/graphql/resolvers/games.js');
+const madge = require('madge');
 
-describe('Game', function() {
+describe('Game CRUD and Resolver methods', function() {
   before(async function() {
+
     await dropGameSchema();
+    await dropUserSchema();
+    await userSchema();
+
+    const args = {
+      userInput: {
+        firstname: 'Admin',
+        lastname: 'Adminson',
+        email: 'admin@admin.com',
+        password: 'WhereTheCheeseAt'
+      }
+    };
+
+    await createUser(args);
   });
 
   it('Create table if it doesn\'t exist', async function() {
@@ -68,5 +88,17 @@ describe('Game', function() {
     const response = await searchGames('Time');
     assert.exists(response[0]);
     assert.equal(response[0].name, 'TimeSplitters: Future Perfect');
+  });
+
+  it('Should find games and add them if they do not exist in local db',  async function() {
+    var response = await searchGames('Time');
+    assert.equal(response.length, 1);
+
+    const token = await authenticate({email: 'admin@admin.com', password: 'WhereTheCheeseAt'});
+    const games = await findGames({name: 'Timesplitters', token: token});
+    assert.equal(games.length, 5);
+
+    response = await searchGames('Time');
+    assert.equal(response.length, 5);
   });
 });

@@ -13,11 +13,11 @@ const getIgdbGame = async (searchArgs, searchValues) => {
 }
 
 const addGame = async (args) => {
-  const {name, summary, release_date, igdb_id, rating, critic_rating, cover} = args;
+  const {name, summary, release_date, igdb_id, critic_rating, cover} = args;
 
   try {
     return await knex("game").returning('id').insert({
-      name, summary, release_date, igdb_id, rating, critic_rating, cover});
+      name, summary, release_date, igdb_id, critic_rating, cover});
   } catch(err) {
     return err;
   }
@@ -31,6 +31,14 @@ const getGameById = async (id) => {
   }
 }
 
+const getGameByIgdbId = async (id) => {
+  try{
+    return await knex('game').where('igdb_id', id);
+  } catch (err) {
+    return err;
+  }
+}
+
 const searchGames = async (name) => {
   try {
     return await knex('game').where('name', 'like', '%' + name + '%');
@@ -39,4 +47,4 @@ const searchGames = async (name) => {
   }
 }
 
-module.exports = { getIgdbGame, addGame, getGameById, searchGames };
+module.exports = { getIgdbGame, addGame, getGameById, searchGames, getGameByIgdbId };
