@@ -5,6 +5,12 @@ const typeDefs = `
     lastname: String
     email: String
   },
+  type Game {
+    name: String
+    summary: String
+    release_date: Int
+    criting_rating: Float
+  },
   input UserInput {
     firstname: String!
     lastname: String!
@@ -14,6 +20,7 @@ const typeDefs = `
   type Query {
     getUserByEmail(email: String, token: String) : User
     authenticate(email: String, password: String) : String
+    findGames(name: String, token: String) : [Game]
   },
   type Mutation {
     createUser(userInput: UserInput) : Int

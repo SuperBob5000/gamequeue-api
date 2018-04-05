@@ -1,8 +1,8 @@
-An API to save information of the games you would like to play and order them as such.
+An API to save information of the games you would like to play(ed).
 
 
 query authenticate($email: String!, $password: String!) {
-  authenticate(email: $email, password: $password) : String
+  authenticate(email: $email, password: $password)
 }
 
 query getUserByEmail($email: String!, $token: String!) {
@@ -11,6 +11,15 @@ query getUserByEmail($email: String!, $token: String!) {
     firstname
     lastname
     email
+  }
+}
+
+query findGames($name: String!, $token: String!) {
+  findGames(name: $name, token: $token){
+    name
+    summary
+    release_date
+    criting_rating
   }
 }
 
