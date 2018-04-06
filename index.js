@@ -4,14 +4,16 @@ const {buildSchema} = require('graphql');
 const typeDefs = require('./src/graphql/typedefs');
 const {addUser, findUserByEmail} = require('./src/queries/user');
 const {getUserByEmail, createUser, authenticate} = require('./src/graphql/resolvers/users');
-const findGames = require('./src/graphql/resolvers/games');
+const {findGames, associateGameWithUser, findGamesByUserId} = require('./src/graphql/resolvers/games');
 const userSchema = require('./src/tables/userSchema');
 const gameSchema = require('./src/tables/gameSchema');
+const userGameSchema = require('./src/tables/userGameSchema');
 require('dotenv').config;
 
 const initialiseData = async () => {
   await userSchema();
   await gameSchema();
+  await userGameSchema();
 
   const admin = await findUserByEmail(process.env.ADMIN_EMAIL);
   if(!admin) {
@@ -32,7 +34,9 @@ const root = {
   getUserByEmail: getUserByEmail,
   authenticate: authenticate,
   createUser: createUser,
-  findGames: findGames
+  findGames: findGames,
+  associateGameWithUser: associateGameWithUser,
+  findGamesByUserId: findGamesByUserId
 }
 
 const app = express();

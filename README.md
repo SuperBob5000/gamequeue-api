@@ -23,6 +23,15 @@ query findGames($name: String!, $token: String!) {
   }
 }
 
+query findGamesByUserId($token: String!) {
+  findGamesByUserId(token: $token){
+    name
+    summary
+    release_date
+    criting_rating
+  }
+}
+
 mutation {
     createUser(userInput: {
       firstname: $firstname,
@@ -30,4 +39,8 @@ mutation {
       password: $password,
       email: $email
     })
+}
+
+mutation {
+  associateGameWithUser(gameId, igdb, token)
 }

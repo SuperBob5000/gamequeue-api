@@ -1,15 +1,16 @@
-debugger;
 require('dotenv').config;
 process.env.DB_NAME = 'gamequeue_TEST';
 const assert = require('chai').assert;
 const knex = require('../src/dbconnection');
 const gameSchema = require('../src/tables/gameSchema');
 const dropGameSchema = require('../src/tables/dropGameSchema');
-const userSchema = require('../src/tables/userSchema.js');
-const dropUserSchema = require('../src/tables/dropUserSchema.js');
+const userSchema = require('../src/tables/userSchema');
+const dropUserSchema = require('../src/tables/dropUserSchema');
+const userGameSchema = require('../src/tables/userGameSchema');
+const dropUserGameSchema = require('../src/tables/dropUserGameSchema');
 const {authenticate, createUser} = require('../src/graphql/resolvers/users');
 const {getIgdbGame, addGame, getGameById, searchGames} = require('../src/queries/game');
-const findGames = require('../src/graphql/resolvers/games.js');
+const {findGames, associateGameWithUser, findGamesByUserId} = require('../src/graphql/resolvers/games');
 const madge = require('madge');
 
 describe('Game CRUD and Resolver methods', function() {
@@ -17,7 +18,9 @@ describe('Game CRUD and Resolver methods', function() {
 
     await dropGameSchema();
     await dropUserSchema();
+    await dropUserGameSchema();
     await userSchema();
+    await userGameSchema();
 
     const args = {
       userInput: {
@@ -100,5 +103,18 @@ describe('Game CRUD and Resolver methods', function() {
 
     response = await searchGames('Time');
     assert.equal(response.length, 5);
+  });
+
+  it('Should associate a game with a user', async function() {
+    const token = await authenticate({email: 'admin@admin.com', password: 'WhereTheCheeseAt'});
+    const args = {
+      gameId: 1,
+      token: token
+    }
+    const id = await associateGameWithUser(args);
+    assert.isNumber(id[0]);
+
+    const games = await findGamesByUserId({token});
+    assert.exists(games[0]);
   });
 });

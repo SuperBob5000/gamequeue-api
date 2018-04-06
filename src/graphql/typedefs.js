@@ -21,9 +21,11 @@ const typeDefs = `
     getUserByEmail(email: String, token: String) : User
     authenticate(email: String, password: String) : String
     findGames(name: String, token: String) : [Game]
+    findGamesByUserId(token: String) : [Game]
   },
   type Mutation {
     createUser(userInput: UserInput) : Int
+    associateGameWithUser(gameId: Int, igdbId: Int, token: String) : Int
   }
 `;
 

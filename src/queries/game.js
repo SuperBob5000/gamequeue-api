@@ -47,4 +47,22 @@ const searchGames = async (name) => {
   }
 }
 
-module.exports = { getIgdbGame, addGame, getGameById, searchGames, getGameByIgdbId };
+const userGameAssociation = async (args) => {
+  const {userId, gameId, igdbId} = args;
+
+  try {
+    return await knex('user_game').returning('id').insert({user_id: userId, game_id: gameId, igdb_id: igdbId});
+  } catch (err) {
+    return err;
+  }
+}
+
+const getUserAssociationsByUserId = async (userId) => {
+  try {
+    return await knex('user_game').where('user_id', userId);
+  } catch (err) {
+    return err;
+  }
+}
+
+module.exports = { getIgdbGame, addGame, getGameById, searchGames, getGameByIgdbId, userGameAssociation, getUserAssociationsByUserId };

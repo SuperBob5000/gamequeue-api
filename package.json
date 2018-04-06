@@ -9,8 +9,9 @@
   "private": true,
   "scripts": {
     "test": "nyc mocha",
-    "debug test": "mocha --inspect-brk",
-    "start": "node index.js"
+    "debugtest": "mocha --inspect-brk",
+    "start": "node index.js",
+    "debugstart": "node --inspect-brk index.js"
   },
   "dependencies": {
     "argon2": "^0.17.2",

@@ -1,5 +1,4 @@
-debugger;
-const { getIgdbGame, addGame, searchGames, getGameByIgdbId } = require('../../queries/game');
+const { getIgdbGame, addGame, searchGames, getGameByIgdbId, userGameAssociation, getUserAssociationsByUserId, getGameById } = require('../../queries/game');
 const { findUserByEmail } = require('../../queries/user');
 const verify = require('../../verifyjwt');
 require('dotenv').config;
@@ -7,23 +6,7 @@ require('dotenv').config;
 const findGames = async (args) => {
   const {name, token} = args;
 
-  var verified;
-  try {
-    verified = await verify(token);
-  } catch (err) {
-    return err;
-  }
-
-  var user;
-  if (verified.email) {
-    try {
-      user = await findUserByEmail(verified.email);
-    } catch (err) {
-      return err;
-    }
-  } else {
-    return new Error('Token invalid. Please log in.');
-  }
+  const user = await verifyTokenAndGetUser(token);
 
   if(user) {
     var localGames,
@@ -100,4 +83,79 @@ const findGames = async (args) => {
   }
 }
 
-module.exports = findGames;
+const associateGameWithUser = async (args) => {
+  const { gameId, token, igdbId } = args;
+
+  const user = await verifyTokenAndGetUser(token);
+
+  if(user) {
+    try {
+      if(gameId || igdbId) {
+        return await userGameAssociation({userId: user.id, gameId, igdbId});
+      } else {
+        return new Error("There must be at least one game id input.");
+      }
+    } catch (err) {
+      return err;
+    }
+  }
+}
+
+const findGamesByUserId = async (args) => {
+  const user = await verifyTokenAndGetUser(args.token);
+  var games = [];
+
+  if(user) {
+    var gameUserAssociations;
+    try {
+       gameUserAssociations = await getUserAssociationsByUserId(user.id);
+    } catch (err) {
+      return err;
+    }
+
+    if(gameUserAssociations[0]) {
+      for (i = 0; i < gameUserAssociations.length; i++) {
+        const gameId = gameUserAssociations[i].game_id,
+        igdbId = gameUserAssociations[i].igdb_id;
+        if (gameId) {
+          try {
+            const game = await getGameById(gameId);
+            games.push(game[0]);
+          } catch (err) {
+            console.log("Cannot obtain game with id " + gameId);
+          }
+        } else if (igdbId) {
+          try {
+            const game = await getGameByIgdbId(igdbId);
+            games.push(game[0]);
+          } catch (err) {
+            console.log("Cannot obtain game with igdb_id " + igdbId);
+          }
+        }
+      }
+    }
+  }
+
+  return games;
+}
+
+const verifyTokenAndGetUser = async (token) => {
+  var verified;
+  try {
+    verified = await verify(token);
+  } catch (err) {
+    return err;
+  }
+
+  if (verified.email) {
+    try {
+      return await findUserByEmail(verified.email);
+    } catch (err) {
+      return err;
+    }
+  } else {
+    return new Error('Token invalid. Please log in.');
+  }
+}
+
+module.exports = {findGames, associateGameWithUser, findGamesByUserId};
