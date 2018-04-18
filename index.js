@@ -1,6 +1,7 @@
 const express = require('express');
 const expressGraphql = require('express-graphql');
 const {buildSchema} = require('graphql');
+const cors = require('cors');
 const typeDefs = require('./src/graphql/typedefs');
 const {addUser, findUserByEmail} = require('./src/queries/user');
 const {getUserByEmail, createUser, authenticate} = require('./src/graphql/resolvers/users');
@@ -40,6 +41,19 @@ const root = {
 }
 
 const app = express();
+//Add as many urls as needed to allow access to API
+const whitelist = [
+  process.env.APP_URL
+];
+const corsOptions = {
+    origin: function(origin, callback){
+        const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+        callback(null, originIsWhitelisted);
+    }
+};
+
+app.use(cors(corsOptions));
+
 app.use('/graphql', expressGraphql({
   schema: schema,
   rootValue: root,
